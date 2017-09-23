@@ -20,5 +20,12 @@ extension Droplet {
             
             return try marketController.allMarkets(request)
         }
+        
+        let notificationRequestController = NotificationRequestController()
+        
+        api.post("notificationRequest") { request in
+            
+            return try notificationRequestController.create(request)
+        }
     }
 }
