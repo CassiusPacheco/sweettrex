@@ -17,19 +17,14 @@ final class Market: Model {
     let name: String
     let description: String
     let isActive: Bool
-    
-    init(name: String, description: String, isActive: Bool = true) {
-        
-        self.name = name.uppercased()
-        self.description = description
-        self.isActive = isActive
-    }
-    
+    var lastPrice: Double?
+
     required init(row: Row) throws {
         
         name = try row.get(Market.Keys.name)
         description = try row.get(Market.Keys.description)
         isActive = try row.get(Market.Keys.isActive)
+        lastPrice = try row.get(Market.Keys.lastPrice)
     }
     
     init(json: JSON) throws {
@@ -50,6 +45,7 @@ final class Market: Model {
         try row.set(Market.Keys.name, name)
         try row.set(Market.Keys.description, description)
         try row.set(Market.Keys.isActive, isActive)
+        try row.set(Market.Keys.lastPrice, lastPrice)
         
         return row
     }
@@ -81,6 +77,7 @@ extension Market: Preparation {
             builder.string(Market.Keys.name, unique: true)
             builder.string(Market.Keys.description)
             builder.bool(Market.Keys.isActive)
+            builder.double(Market.Keys.lastPrice, optional: true)
         }
     }
     
@@ -112,5 +109,6 @@ extension Market {
         static var name = "name"
         static var description = "description"
         static var isActive = "is_active"
+        static var lastPrice = "last_price"
     }
 }
