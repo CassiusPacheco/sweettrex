@@ -29,7 +29,7 @@ final class NotificationRequest: Model {
     
     init(json: JSON) throws {
         
-        guard let name: String = try json.get(NotificationRequest.Keys.highPrice) else { throw Abort.badRequest }
+        guard let name: String = try json.get(NotificationRequest.Keys.marketName) else { throw Abort.badRequest }
         
         self.market = try Market.findOr404(byName: name)
         self.email = try json.get(NotificationRequest.Keys.email)
