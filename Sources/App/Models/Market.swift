@@ -76,6 +76,16 @@ extension Market: Preparation {
 
 extension Market {
     
+    static func findOr404(byName name: String) throws -> Market {
+        
+        guard let market = try Market.makeQuery().filter(Market.Keys.name, name).first() else { throw ModelNotFoundError(type: Market.self) }
+        
+        return market
+    }
+}
+
+extension Market {
+    
     fileprivate struct Keys {
         
         static var name = "name"
