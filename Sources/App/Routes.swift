@@ -27,5 +27,10 @@ extension Droplet {
             
             return try notificationRequestController.create(request)
         }
+        
+        api.get("notificationRequest") { request in
+            
+            return try notificationRequestController.list(request)
+        }
     }
 }

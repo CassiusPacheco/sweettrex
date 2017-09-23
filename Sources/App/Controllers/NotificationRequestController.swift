@@ -23,6 +23,15 @@ final class NotificationRequestController {
         
         return Response(status: .created)
     }
+    
+    func list(_ request: Request) throws -> ResponseRepresentable {
+        
+        guard let email = request.query?["email"]?.string else { throw Abort.badRequest }
+        
+        let notificationRequests = try NotificationRequest.findAll(byEmail: email)
+        
+        return try notificationRequests.makeJSON()
+    }
 }
 
 extension NotificationRequestController: EmptyInitializable { }
