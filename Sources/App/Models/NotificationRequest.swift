@@ -48,6 +48,20 @@ final class NotificationRequest: Model {
     }
 }
 
+extension NotificationRequest: JSONRepresentable {
+    
+    func makeJSON() throws -> JSON {
+        
+        var json = JSON()
+        
+        try json.set(NotificationRequest.Keys.email, email)
+        try json.set(NotificationRequest.Keys.market, market.name)
+        try json.set(NotificationRequest.Keys.price, price)
+        
+        return json
+    }
+}
+
 extension NotificationRequest: Timestampable { }
 
 extension NotificationRequest: Preparation {
