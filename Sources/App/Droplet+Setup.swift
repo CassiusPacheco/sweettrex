@@ -18,5 +18,11 @@ extension Droplet {
             let job = MarketJob()
             job.fetchAndSaveMarkets()
         }
+        
+        Jobs.add(interval: .seconds(60)) {
+            
+            let job = NotificationRequestJob()
+            job.checkNotification()
+        }
     }
 }
