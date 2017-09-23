@@ -78,7 +78,7 @@ extension NotificationRequest {
     
     fileprivate struct Keys {
         
-        static var email = "name"
+        static var email = "email"
         static var marketName = "market_name"
         static var lowPrice = "low_price"
         static var highPrice = "high_price"
