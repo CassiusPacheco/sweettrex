@@ -1,7 +1,10 @@
 import FluentProvider
+import MySQLProvider
 
 extension Config {
+    
     public func setup() throws {
+        
         // allow fuzzy conversions for these types
         // (add your own types here)
         Node.fuzzy = [Row.self, JSON.self, Node.self]
@@ -12,6 +15,8 @@ extension Config {
     
     /// Configure providers
     private func setupProviders() throws {
+        
+        try addProvider(MySQLProvider.Provider.self)
         try addProvider(FluentProvider.Provider.self)
     }
     
