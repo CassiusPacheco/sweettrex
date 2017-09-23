@@ -20,7 +20,7 @@ final class Market: Model {
     
     init(name: String, description: String, isActive: Bool = true) {
         
-        self.name = name
+        self.name = name.uppercased()
         self.description = description
         self.isActive = isActive
     }
@@ -36,7 +36,9 @@ final class Market: Model {
         
         guard let base: String = try json.get("BaseCurrencyLong"), let currency: String = try json.get("MarketCurrencyLong") else { throw Abort.badRequest }
         
-        self.name = try json.get("MarketName")
+        let name: String = try json.get("MarketName")
+        
+        self.name = name.uppercased()
         self.isActive = try json.get("IsActive")
         self.description = base + "-" + currency
     }
