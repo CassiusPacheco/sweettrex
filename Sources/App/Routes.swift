@@ -3,22 +3,22 @@ import Vapor
 extension Droplet {
     
     func setupRoutes() throws {
-        get("hello") { req in
+
+        let api = grouped("api", "v1")
+        
+        api.get("hello") { request in
+            
             var json = JSON()
             try json.set("hello", "world")
+            
             return json
         }
-
-        get("plaintext") { req in
-            return "Hello, world!"
+        
+        let marketController = MarketController()
+        
+        api.get("market") { request in
+            
+            return try marketController.market(request)
         }
-
-        // response to requests to /info domain
-        // with a description of the request
-        get("info") { req in
-            return req.description
-        }
-
-        get("description") { req in return req.description }
     }
 }
