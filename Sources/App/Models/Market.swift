@@ -112,3 +112,16 @@ extension Market {
         static var lastPrice = "last_price"
     }
 }
+
+extension Market: Equatable {
+    
+    static func ==(lhs: Market, rhs: Market) -> Bool {
+        
+        guard lhs.name == rhs.name else { return false }
+        guard lhs.description == rhs.description else { return false }
+        guard lhs.isActive == rhs.isActive else { return false }
+        guard lhs.lastPrice == rhs.lastPrice else { return false }
+        
+        return true
+    }
+}
