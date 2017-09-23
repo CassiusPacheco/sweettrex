@@ -25,7 +25,7 @@ enum ExternalUrl {
             
         case .ticker(let market):
             
-            return URL(string: ExternalUrl.bittrexBaseUrl + "/public/getticker?market=" + market.name)!
+            return URL(string: ExternalUrl.bittrexBaseUrl + "/getticker?market=" + market.name)!
         }
     }
 }
