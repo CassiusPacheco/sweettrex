@@ -16,8 +16,8 @@ final class NotificationRequest: Model {
     
     let email: String
     let market: Market
-    let lowPrice: Double
-    let highPrice: Double
+    let lowPrice: Double?
+    let highPrice: Double?
 
     required init(row: Row) throws {
         
