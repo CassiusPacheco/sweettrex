@@ -11,7 +11,7 @@ import HTTP
 
 final class MarketController {
     
-    func market(_ request: Request) throws -> ResponseRepresentable {
+    func allMarkets(_ request: Request) throws -> ResponseRepresentable {
         
         return try Market.all().makeJSON()
     }

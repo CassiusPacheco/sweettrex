@@ -18,7 +18,7 @@ extension Droplet {
         
         api.get("market") { request in
             
-            return try marketController.market(request)
+            return try marketController.allMarkets(request)
         }
     }
 }
