@@ -63,8 +63,8 @@ extension NotificationRequest: Preparation {
             builder.id()
             builder.string(NotificationRequest.Keys.email)
             builder.foreignId(for: Market.self, foreignIdKey: NotificationRequest.Keys.marketName)
-            builder.double(NotificationRequest.Keys.lowPrice)
-            builder.double(NotificationRequest.Keys.highPrice)
+            builder.double(NotificationRequest.Keys.lowPrice, optional: true)
+            builder.double(NotificationRequest.Keys.highPrice, optional: true)
         }
     }
     
