@@ -25,14 +25,14 @@ struct MarketJob {
     func fetchAndSaveMarkets() {
         
         do {
-        
-            print("\nFetching markets...")
             
             try service.allMarkets { result in
                 
                 if case .successful(let markets) = result {
                     
                     try? markets.forEach({ try $0.save() })
+                    
+                    print("\nMarkets saved")
                 }
             }
         }
