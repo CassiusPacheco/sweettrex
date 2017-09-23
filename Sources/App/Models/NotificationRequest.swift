@@ -62,6 +62,14 @@ extension NotificationRequest: JSONRepresentable {
     }
 }
 
+extension NotificationRequest {
+    
+    static func findAll(byEmail email: String) throws -> [NotificationRequest] {
+        
+        return try NotificationRequest.makeQuery().filter(NotificationRequest.Keys.email, email).all()
+    }
+}
+
 extension NotificationRequest: Timestampable { }
 
 extension NotificationRequest: Preparation {
