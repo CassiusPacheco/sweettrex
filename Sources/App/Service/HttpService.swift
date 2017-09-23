@@ -35,13 +35,13 @@ protocol HttpServiceProtocol {
     func request(_ externalUrl: ExternalUrl, httpMethod: HttpMethod, bodyData: JSON?, onCompletion: @escaping (Result<JSON>) -> Void) throws
 }
 
-final class HttpService: HttpServiceProtocol {
+struct HttpService: HttpServiceProtocol {
     
     static let sharedURLSession = URLSession(configuration: .default)
     
     private let urlSession: URLSessionProtocol
     
-    convenience init() {
+    init() {
         
         self.init(urlSession: HttpService.sharedURLSession)
     }
