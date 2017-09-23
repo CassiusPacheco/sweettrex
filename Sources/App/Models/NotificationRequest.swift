@@ -22,14 +22,14 @@ final class NotificationRequest: Model {
     required init(row: Row) throws {
         
         email = try row.get(NotificationRequest.Keys.email)
-        market = try row.get(NotificationRequest.Keys.marketName)
+        market = try row.get(NotificationRequest.Keys.market)
         lowPrice = try row.get(NotificationRequest.Keys.lowPrice)
         highPrice = try row.get(NotificationRequest.Keys.highPrice)
     }
     
     init(json: JSON) throws {
         
-        guard let name: String = try json.get(NotificationRequest.Keys.marketName) else { throw Abort.badRequest }
+        guard let name: String = try json.get(NotificationRequest.Keys.market) else { throw Abort.badRequest }
         
         self.market = try Market.findOr404(byName: name)
         self.email = try json.get(NotificationRequest.Keys.email)
@@ -62,7 +62,8 @@ extension NotificationRequest: Preparation {
             
             builder.id()
             builder.string(NotificationRequest.Keys.email)
-            builder.foreignId(for: Market.self, foreignIdKey: NotificationRequest.Keys.marketName)
+            builder.string(NotificationRequest.Keys.market)
+            builder.foreignKey(NotificationRequest.Keys.market, references: NotificationRequest.Keys.marketForeignKey, on: Market.self)
             builder.double(NotificationRequest.Keys.lowPrice, optional: true)
             builder.double(NotificationRequest.Keys.highPrice, optional: true)
         }
@@ -79,9 +80,10 @@ extension NotificationRequest {
     fileprivate struct Keys {
         
         static var email = "email"
-        static var marketName = "market_name"
+        static var market = "market"
         static var lowPrice = "low_price"
         static var highPrice = "high_price"
+        static var marketForeignKey = "name"
     }
 }
 
