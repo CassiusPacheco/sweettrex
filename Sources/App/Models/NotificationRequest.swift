@@ -16,15 +16,15 @@ final class NotificationRequest: Model {
     
     let email: String
     let market: Market
-    let lowPrice: Double?
-    let highPrice: Double?
+    let price: Double
 
     required init(row: Row) throws {
         
-        email = try row.get(NotificationRequest.Keys.email)
-        market = try row.get(NotificationRequest.Keys.market)
-        lowPrice = try row.get(NotificationRequest.Keys.lowPrice)
-        highPrice = try row.get(NotificationRequest.Keys.highPrice)
+        guard let name: String = try row.get(NotificationRequest.Keys.market) else { throw Abort.badRequest }
+        
+        self.market = try Market.findOr404(byName: name)
+        self.email = try row.get(NotificationRequest.Keys.email)
+        self.price = try row.get(NotificationRequest.Keys.price)
     }
     
     init(json: JSON) throws {
@@ -33,10 +33,7 @@ final class NotificationRequest: Model {
         
         self.market = try Market.findOr404(byName: name)
         self.email = try json.get(NotificationRequest.Keys.email)
-        self.lowPrice = try json.get(NotificationRequest.Keys.lowPrice)
-        self.highPrice = try json.get(NotificationRequest.Keys.highPrice)
-        
-        guard self.lowPrice != nil || self.highPrice != nil else { throw Abort.badRequest }
+        self.price = try json.get(NotificationRequest.Keys.price)
     }
     
     func makeRow() throws -> Row {
@@ -45,8 +42,7 @@ final class NotificationRequest: Model {
         
         try row.set(NotificationRequest.Keys.email, email)
         try row.set(NotificationRequest.Keys.market, market.name)
-        try row.set(NotificationRequest.Keys.lowPrice, lowPrice)
-        try row.set(NotificationRequest.Keys.highPrice, highPrice)
+        try row.set(NotificationRequest.Keys.price, price)
         
         return row
     }
@@ -63,9 +59,8 @@ extension NotificationRequest: Preparation {
             builder.id()
             builder.string(NotificationRequest.Keys.email)
             builder.string(NotificationRequest.Keys.market)
+            builder.double(NotificationRequest.Keys.price)
             builder.foreignKey(NotificationRequest.Keys.market, references: NotificationRequest.Keys.marketForeignKey, on: Market.self)
-            builder.double(NotificationRequest.Keys.lowPrice, optional: true)
-            builder.double(NotificationRequest.Keys.highPrice, optional: true)
         }
     }
     
@@ -81,8 +76,7 @@ extension NotificationRequest {
         
         static var email = "email"
         static var market = "market"
-        static var lowPrice = "low_price"
-        static var highPrice = "high_price"
+        static var price = "price"
         static var marketForeignKey = "name"
     }
 }
