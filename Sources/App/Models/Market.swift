@@ -98,6 +98,11 @@ extension Market {
         
         return market
     }
+    
+    static func find(byName name: String) throws -> Market? {
+        
+        return try Market.makeQuery().filter(Market.Keys.name, name).first()
+    }
 }
 
 extension Market {
