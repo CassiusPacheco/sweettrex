@@ -35,6 +35,8 @@ final class NotificationRequest: Model {
         self.email = try json.get(NotificationRequest.Keys.email)
         self.lowPrice = try json.get(NotificationRequest.Keys.lowPrice)
         self.highPrice = try json.get(NotificationRequest.Keys.highPrice)
+        
+        guard self.lowPrice != nil || self.highPrice != nil else { throw Abort.badRequest }
     }
     
     func makeRow() throws -> Row {
