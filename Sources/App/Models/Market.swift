@@ -53,6 +53,20 @@ final class Market: Model {
     }
 }
 
+extension Market: JSONRepresentable {
+    
+    func makeJSON() throws -> JSON {
+        
+        var json = JSON()
+        
+        try json.set(Market.Keys.name, name)
+        try json.set(Market.Keys.description, description)
+        try json.set(Market.Keys.isActive, isActive)
+        
+        return json
+    }
+}
+
 extension Market: Timestampable { }
 
 extension Market: Preparation {
