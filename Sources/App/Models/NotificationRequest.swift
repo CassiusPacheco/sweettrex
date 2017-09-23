@@ -44,7 +44,7 @@ final class NotificationRequest: Model {
         var row = Row()
         
         try row.set(NotificationRequest.Keys.email, email)
-        try row.set(NotificationRequest.Keys.marketName, market)
+        try row.set(NotificationRequest.Keys.market, market.name)
         try row.set(NotificationRequest.Keys.lowPrice, lowPrice)
         try row.set(NotificationRequest.Keys.highPrice, highPrice)
         
