@@ -62,7 +62,7 @@ extension Market: Preparation {
         try database.create(self) { builder in
             
             builder.id()
-            builder.string(Market.Keys.name)
+            builder.string(Market.Keys.name, unique: true)
             builder.string(Market.Keys.description)
             builder.bool(Market.Keys.isActive)
         }
