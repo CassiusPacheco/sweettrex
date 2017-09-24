@@ -17,6 +17,7 @@ final class NotificationRequest: Model {
     let email: String
     let market: Market
     let price: Double
+    var repeatCount: Int
 
     required init(row: Row) throws {
         
@@ -25,6 +26,7 @@ final class NotificationRequest: Model {
         self.market = try Market.findOr404(byName: name)
         self.email = try row.get(NotificationRequest.Keys.email)
         self.price = try row.get(NotificationRequest.Keys.price)
+        self.repeatCount = try row.get(NotificationRequest.Keys.repeatCount)
     }
     
     init(json: JSON) throws {
@@ -34,6 +36,9 @@ final class NotificationRequest: Model {
         self.market = try Market.findOr404(byName: name)
         self.email = try json.get(NotificationRequest.Keys.email)
         self.price = try json.get(NotificationRequest.Keys.price)
+        
+        let count: Int? = try json.get(NotificationRequest.Keys.repeatCount)
+        self.repeatCount = count ?? 0
     }
     
     func makeRow() throws -> Row {
@@ -43,6 +48,7 @@ final class NotificationRequest: Model {
         try row.set(NotificationRequest.Keys.email, email)
         try row.set(NotificationRequest.Keys.market, market.name)
         try row.set(NotificationRequest.Keys.price, price)
+        try row.set(NotificationRequest.Keys.repeatCount, repeatCount)
         
         return row
     }
@@ -57,6 +63,7 @@ extension NotificationRequest: JSONRepresentable {
         try json.set(NotificationRequest.Keys.email, email)
         try json.set(NotificationRequest.Keys.market, market.name)
         try json.set(NotificationRequest.Keys.price, price)
+        try json.set(NotificationRequest.Keys.repeatCount, repeatCount)
         
         return json
     }
@@ -82,6 +89,7 @@ extension NotificationRequest: Preparation {
             builder.string(NotificationRequest.Keys.email)
             builder.string(NotificationRequest.Keys.market)
             builder.double(NotificationRequest.Keys.price)
+            builder.integer(NotificationRequest.Keys.repeatCount)
             builder.foreignKey(NotificationRequest.Keys.market, references: NotificationRequest.Keys.marketForeignKey, on: Market.self)
         }
     }
@@ -100,6 +108,7 @@ extension NotificationRequest {
         static var market = "market"
         static var price = "price"
         static var marketForeignKey = "name"
+        static var repeatCount = "repeat_count"
     }
 }
 

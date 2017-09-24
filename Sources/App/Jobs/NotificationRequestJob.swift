@@ -76,6 +76,16 @@ struct NotificationRequestJob {
                     let email = try Email(notification: notification, market: market, currentPrice: currentPrice)
                     
                     try self.mail.send(email)
+                    
+                    if notification.repeatCount == 0 {
+                        
+                        try notification.delete()
+                    }
+                    else {
+                        
+                        notification.repeatCount -= 1
+                        try notification.save()
+                    }
                 }
                 catch let error {
                     
