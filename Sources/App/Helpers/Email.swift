@@ -13,7 +13,7 @@ extension Email {
     
     convenience init(notification: NotificationRequest, market: Market, currentPrice: Double) throws {
         
-        guard let lastPrice = market.lastPrice else { Abort.badRequest }
+        guard let lastPrice = market.lastPrice else { throw Abort.badRequest }
         
         self.init(from: EmailAddress(name: "Sweettrex", address: "sweettrex@sweettrex.com"),
                   to: notification.email,
