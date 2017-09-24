@@ -7,19 +7,23 @@
 //
 
 import Foundation
+import SMTP
 
 struct NotificationRequestJob {
     
     private let service: TickerServiceProtocol
     
-    init() {
+    private let mail: MailProtocol
+    
+    init(droplet: Droplet) throws {
         
-        self.init(service: TickerService())
+        self.init(service: TickerService(), mail: try Mailgun(config: droplet.config))
     }
     
-    init(service: TickerServiceProtocol) {
+    init(service: TickerServiceProtocol, mail: MailProtocol) {
         
         self.service = service
+        self.mail = mail
     }
     
     func checkNotification() {
@@ -52,9 +56,9 @@ struct NotificationRequestJob {
         }
     }
     
-    func updateMarketAndNotifyIfNecessary(_ market: Market, price: Double, notifications: [NotificationRequest]) throws {
+    func updateMarketAndNotifyIfNecessary(_ market: Market, price currentPrice: Double, notifications: [NotificationRequest]) throws {
         
-        guard market.lastPrice != price else { return }
+        guard market.lastPrice != currentPrice else { return }
         
         if let lastPrice = market.lastPrice {
             
@@ -62,16 +66,25 @@ struct NotificationRequestJob {
             
             for notification in marketNotifications {
                 
-                guard (price > notification.price && lastPrice < notification.price) ||
-                    (price < notification.price && lastPrice > notification.price) else { continue }
+                guard (currentPrice > notification.price && lastPrice < notification.price) ||
+                    (currentPrice < notification.price && lastPrice > notification.price) else { continue }
                 
-                print("\n✉️ [\(market.name)] Notify \(notification.email) crossing price \(notification.price) from (\(lastPrice) to \(price))\n")
+                print("\n✉️ [\(market.name)] Notify \(notification.email) crossing price \(notification.price) from \(lastPrice) to \(currentPrice)\n")
                 
-                //TODO: send email
+                do {
+                    
+                    let email = try Email(notification: notification, market: market, currentPrice: currentPrice)
+                    
+                    try self.mail.send(email)
+                }
+                catch let error {
+                    
+                    print("💥📩💥 Failed to send email to \(notification.email): \(error)")
+                }
             }
         }
         
-        market.lastPrice = price
+        market.lastPrice = currentPrice
         try market.save()
     }
 }

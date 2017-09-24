@@ -21,7 +21,7 @@ extension Droplet {
         
         Jobs.add(interval: .seconds(60)) {
             
-            let job = NotificationRequestJob()
+            let job = try NotificationRequestJob(droplet: self)
             job.checkNotification()
         }
     }
