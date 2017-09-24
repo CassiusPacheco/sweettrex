@@ -1,23 +1,35 @@
-<p align="center">
-    <img src="https://cloud.githubusercontent.com/assets/1342803/24797159/52fb0d88-1b90-11e7-85a5-359fff0496a4.png" width="320" alt="MySQL">
-    <br>
-    <br>
-    <a href="http://beta.docs.vapor.codes/getting-started/hello-world/">
-        <img src="http://img.shields.io/badge/read_the-docs-92A8D1.svg" alt="Documentation">
-    </a>
-    <a href="http://vapor.team">
-        <img src="http://vapor.team/badge.svg" alt="Slack Team">
-    </a>
-    <a href="LICENSE">
-        <img src="http://img.shields.io/badge/license-MIT-brightgreen.svg" alt="MIT License">
-    </a>
-    <a href="https://circleci.com/gh/vapor/mysql">
-        <img src="https://circleci.com/gh/vapor/mysql.svg?style=shield" alt="Continuous Integration">
-    </a>
-    <a href="https://travis-ci.org/vapor/api-template">
-    	<img src="https://travis-ci.org/vapor/api-template.svg?branch=master" alt="Build Status">
-    </a>
-    <a href="https://swift.org">
-        <img src="http://img.shields.io/badge/swift-3.1-brightgreen.svg" alt="Swift 3.1">
-    </a>
-</center>
+# Sweettrex
+
+Sweettrex is a small server written in [Vapor](https://vapor.codes) that sends e-mails on [Bittrex's](https://bittrex.com) price changes.
+
+![email](https://raw.githubusercontent.com/CassiusPacheco/sweettrex/master/email.png)
+
+## E-mail Provider
+
+The project uses [Mailgun](https://www.mailgun.com) as the mail provider. After creating your Mailgun's account, add a `mailgun.json` file to `Config/Secrets/`:
+
+```
+{
+    "domain": "some domain",
+    "key": "some key"
+}
+```
+
+## MySQL
+
+Sweettrex uses a MySQL database to store the cryptocurrency `Markets` and the users' `NotificationRequests`. Configuring MySQL requires adding a `mysql.json` file to `Config/Secrets/` just as the example below:
+
+```
+{
+    "hostname": "some host",
+    "user": "some user",
+    "password": "some password",
+    "database": "db name",
+    "port": 3306,
+    "encoding": "utf8"
+}
+```
+
+## WIP
+
+This is still a work in progress project and managing alerts is limited via API. More info to come soon :)
