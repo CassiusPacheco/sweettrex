@@ -1,5 +1,8 @@
 @_exported import Vapor
-import Jobs
+import Dispatch
+
+private let marketJob = DispatchSource.makeTimerSource()
+private let notificationJob = DispatchSource.makeTimerSource()
 
 extension Droplet {
     
@@ -13,16 +16,32 @@ extension Droplet {
     
     private func setupJobs() {
         
-        Jobs.add(interval: .days(1)) {
+        // MARK: - Market
+        
+        marketJob.scheduleRepeating(deadline: .now(), interval: .seconds(86400))
+        
+        marketJob.setEventHandler(handler: {
             
             let job = MarketJob()
             job.fetchAndSaveMarkets()
-        }
+        })
         
-        Jobs.add(interval: .seconds(60)) {
+        marketJob.resume()
+        
+        // MARK: - Notification
+        
+        notificationJob.scheduleRepeating(deadline: .now(), interval: .seconds(60))
+        
+        notificationJob.setEventHandler(handler: {
             
-            let job = try NotificationRequestJob(droplet: self)
+            guard let job = try? NotificationRequestJob(droplet: self) else {
+            
+                return print("Notification job hasn't started due to an error")
+            }
+            
             job.checkNotification()
-        }
+        })
+        
+        notificationJob.resume()
     }
 }
