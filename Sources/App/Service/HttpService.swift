@@ -32,7 +32,7 @@ enum Result<T> {
 
 protocol HttpServiceProtocol {
     
-    func request(_ externalUrl: ExternalUrl, httpMethod: HttpMethod, bodyData: JSON?, onCompletion: @escaping (Result<JSON>) -> Void) throws
+    func request(_ externalUrl: ExternalUrl, httpMethod: HttpMethod, bodyData: JSON?) throws -> Result<JSON>
 }
 
 struct HttpService: HttpServiceProtocol {
@@ -51,7 +51,7 @@ struct HttpService: HttpServiceProtocol {
         self.urlSession = urlSession
     }
     
-    func request(_ externalUrl: ExternalUrl, httpMethod: HttpMethod, bodyData: JSON?, onCompletion: @escaping (Result<JSON>) -> Void) throws {
+    func request(_ externalUrl: ExternalUrl, httpMethod: HttpMethod, bodyData: JSON?) throws -> Result<JSON> {
         
         var request = URLRequest(url: externalUrl.url)
         request.httpMethod = httpMethod.rawValue
@@ -73,34 +73,29 @@ struct HttpService: HttpServiceProtocol {
             }
         }
         
-        let task = urlSession.dataTask(with: request) { (data, urlResponse, error) -> Void in
-            
-            var errorResponse = HttpError.unknown
-            
-            do {
-                
-                if let data = data, data.count > 0 {
-                    
-                    let json = try JSON(bytes: data)
-                    
-                    onCompletion(.successful(json))
-                    
-                    return
-                }
-            }
-            catch {
-                
-                errorResponse = .json
-            }
-            
-            onCompletion(.failed(errorResponse))
-        }
-        
-        task.resume()
+        let response = try urlSession.data(with: request)
         
         if urlSession !== HttpService.sharedURLSession {
             
             urlSession.finishTasksAndInvalidate()
         }
+        
+        var result: Result<JSON> = .failed(.unknown)
+        
+        do {
+            
+            if response.data.count > 0 {
+                
+                let json = try JSON(bytes: response.data)
+                
+                result = .successful(json)
+            }
+        }
+        catch {
+            
+            result = .failed(.json)
+        }
+        
+        return result
     }
 }

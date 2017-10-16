@@ -38,7 +38,12 @@ struct NotificationRequestJob {
             
             for market in uniqueMarkets {
                 
-                try service.tick(market) { result in
+                DispatchQueue.global().async {
+                    
+                    guard let result = try? self.service.tick(market) else {
+                        
+                        return print("[NotificationRequestJob] Tick failed")
+                    }
                     
                     if case .successful(let ticker) = result {
                         

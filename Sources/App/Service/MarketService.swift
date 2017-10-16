@@ -33,31 +33,30 @@ struct MarketService: MarketServiceProtocol {
             
             print("\nFetching markets...")
             
-            try service.request(.market, httpMethod: .GET, bodyData: nil) { result in
+            let result = try service.request(.market, httpMethod: .GET, bodyData: nil)
+            
+            switch result {
                 
-                switch result {
+            case .successful(let json):
+                
+                do {
                     
-                case .successful(let json):
+                    let markets = try self.parse(json)
                     
-                    do {
-                        
-                        let markets = try self.parse(json)
-                        
-                        onCompletion(.successful(markets))
-                    }
-                    catch {
-                        
-                        // TODO: handle errors
-                        print("💥 failed to parse and save markets")
-                        onCompletion(.failed(.parsing))
-                    }
-                    
-                case .failed(let error):
+                    onCompletion(.successful(markets))
+                }
+                catch {
                     
                     // TODO: handle errors
-                    print(error)
-                    onCompletion(.failed(.unknown))
+                    print("💥 failed to parse and save markets")
+                    onCompletion(.failed(.parsing))
                 }
+                
+            case .failed(let error):
+                
+                // TODO: handle errors
+                print(error)
+                onCompletion(.failed(.unknown))
             }
         }
         catch {

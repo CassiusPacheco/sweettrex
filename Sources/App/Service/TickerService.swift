@@ -10,7 +10,7 @@ import Foundation
 
 protocol TickerServiceProtocol {
     
-    func tick(_ market: Market, onCompletion: @escaping (Result<Ticker>) -> Void) throws
+    func tick(_ market: Market) throws -> Result<Ticker>
 }
 
 struct TickerService: TickerServiceProtocol {
@@ -27,45 +27,48 @@ struct TickerService: TickerServiceProtocol {
         self.service = httpService
     }
     
-    func tick(_ market: Market, onCompletion: @escaping (Result<Ticker>) -> Void) throws {
+    func tick(_ market: Market) throws -> Result<Ticker> {
+        
+        var result: Result<Ticker> = .failed(.unknown)
         
         do {
             
             print("\nTick \(market.name)...")
             
-            try service.request(.ticker(market), httpMethod: .GET, bodyData: nil) { result in
+            let requestResult = try service.request(.ticker(market), httpMethod: .GET, bodyData: nil)
+            
+            switch requestResult {
                 
-                switch result {
+            case .successful(let json):
+                
+                do {
                     
-                case .successful(let json):
+                    let tick = try self.parse(json, for: market)
                     
-                    do {
-                        
-                        let tick = try self.parse(json, for: market)
-                        
-                        onCompletion(.successful(tick))
-                    }
-                    catch {
-                        
-                        // TODO: handle errors
-                        print("TickerService 💥 failed to parse Ticker")
-                        onCompletion(.failed(.parsing))
-                    }
-                    
-                case .failed(_):
+                    result = .successful(tick)
+                }
+                catch {
                     
                     // TODO: handle errors
-                    print("TickerService response error")
-                    onCompletion(.failed(.unknown))
+                    print("TickerService 💥 failed to parse Ticker")
+                    result = .failed(.parsing)
                 }
+                
+            case .failed(_):
+                
+                // TODO: handle errors
+                print("TickerService response error")
+                result = .failed(.unknown)
             }
         }
         catch {
             
             // TODO: handle errors
             print("TickerService - failed to request ticker")
-            onCompletion(.failed(.unknown))
+            result = .failed(.unknown)
         }
+        
+        return result
     }
     
     func parse(_ json: JSON, for market: Market) throws -> Ticker {
