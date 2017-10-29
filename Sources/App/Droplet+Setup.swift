@@ -2,7 +2,7 @@
 import Dispatch
 
 private let marketJob = DispatchSource.makeTimerSource()
-private let notificationJob = DispatchSource.makeTimerSource()
+private let alertJob = DispatchSource.makeTimerSource()
 
 extension Droplet {
     
@@ -28,20 +28,20 @@ extension Droplet {
         
         marketJob.resume()
         
-        // MARK: - Notification
+        // MARK: - Alert
         
-        notificationJob.scheduleRepeating(deadline: .now(), interval: .seconds(60))
+        alertJob.scheduleRepeating(deadline: .now(), interval: .seconds(60))
         
-        notificationJob.setEventHandler(handler: {
+        alertJob.setEventHandler(handler: {
             
-            guard let job = try? NotificationRequestJob(droplet: self) else {
+            guard let job = try? AlertJob(droplet: self) else {
             
-                return print("Notification job hasn't started due to an error")
+                return print("Alert job hasn't started due to an error")
             }
             
-            job.checkNotification()
+            job.checkAlert()
         })
         
-        notificationJob.resume()
+        alertJob.resume()
     }
 }

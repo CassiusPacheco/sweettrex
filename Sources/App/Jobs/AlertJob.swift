@@ -1,5 +1,5 @@
 //
-//  NotificationRequestJob.swift
+//  AlertJob.swift
 //  sweettrex
 //
 //  Created by Cassius Pacheco on 24/9/17.
@@ -9,7 +9,7 @@
 import Foundation
 import SMTP
 
-struct NotificationRequestJob {
+struct AlertJob {
     
     private let service: TickerServiceProtocol
     
@@ -26,15 +26,15 @@ struct NotificationRequestJob {
         self.mail = mail
     }
     
-    func checkNotification() {
+    func checkAlert() {
         
         do {
             
-            print("\nCheck notifications...")
+            print("\nChecking alerts...")
             
-            let notifications = try NotificationRequest.all()
+            let alerts = try Alert.all()
             
-            let uniqueMarkets = notifications.map({ $0.market }).filterDuplicates(includeElement: ==)
+            let uniqueMarkets = alerts.map({ $0.market }).filterDuplicates(includeElement: ==)
             
             for market in uniqueMarkets {
                 
@@ -42,14 +42,14 @@ struct NotificationRequestJob {
                     
                     guard let result = try? self.service.tick(market) else {
                         
-                        return print("[NotificationRequestJob] Tick failed")
+                        return print("[AlertJob] Tick failed")
                     }
                     
                     if case .successful(let ticker) = result {
                         
-                        try? self.updateMarketAndNotifyIfNecessary(market, price: ticker.lastPrice, notifications: notifications)
+                        try? self.updateMarketAndNotifyIfNecessary(market, price: ticker.lastPrice, alerts: alerts)
                         
-                        print("\n [\(market.name)] finished at \(ticker.lastPrice)")
+                        print("\n [AlertJob] - [\(market.name)] finished at \(ticker.lastPrice)")
                     }
                 }
             }
@@ -57,44 +57,44 @@ struct NotificationRequestJob {
         catch let error {
             
             // TODO: handle errors
-            print("failed to check notifications \(error)")
+            print("failed to check alerts \(error)")
         }
     }
     
-    func updateMarketAndNotifyIfNecessary(_ market: Market, price currentPrice: Double, notifications: [NotificationRequest]) throws {
+    func updateMarketAndNotifyIfNecessary(_ market: Market, price currentPrice: Double, alerts: [Alert]) throws {
         
         guard market.lastPrice != currentPrice else { return }
         
         if let lastPrice = market.lastPrice {
             
-            let marketNotifications = notifications.filter({ $0.market == market })
+            let marketAlerts = alerts.filter({ $0.market == market })
             
-            for notification in marketNotifications {
+            for alert in marketAlerts {
                 
-                guard (currentPrice > notification.price && lastPrice < notification.price) ||
-                    (currentPrice < notification.price && lastPrice > notification.price) else { continue }
+                guard (currentPrice > alert.price && lastPrice < alert.price) ||
+                    (currentPrice < alert.price && lastPrice > alert.price) else { continue }
                 
-                print("\n✉️ [\(market.name)] Notify \(notification.email) crossing price \(notification.price) from \(lastPrice) to \(currentPrice)\n")
+                print("\n✉️ [\(market.name)] Notify \(alert.email) crossing price \(alert.price) from \(lastPrice) to \(currentPrice)\n")
                 
                 do {
                     
-                    let email = try Email(notification: notification, market: market, currentPrice: currentPrice)
+                    let email = try Email(alert: alert, market: market, currentPrice: currentPrice)
                     
                     try self.mail.send(email)
                     
-                    if notification.repeatCount == 0 {
+                    if alert.repeatCount == 0 {
                         
-                        try notification.delete()
+                        try alert.delete()
                     }
                     else {
                         
-                        notification.repeatCount -= 1
-                        try notification.save()
+                        alert.repeatCount -= 1
+                        try alert.save()
                     }
                 }
                 catch let error {
                     
-                    print("💥📩💥 Failed to send email to \(notification.email): \(error)")
+                    print("💥📩💥 Failed to send email to \(alert.email): \(error)")
                 }
             }
         }

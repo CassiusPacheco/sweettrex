@@ -11,13 +11,13 @@ import SMTP
 
 extension Email {
     
-    convenience init(notification: NotificationRequest, market: Market, currentPrice: Double) throws {
+    convenience init(alert: Alert, market: Market, currentPrice: Double) throws {
         
         guard let lastPrice = market.lastPrice else { throw Abort.badRequest }
         
         self.init(from: EmailAddress(name: "Sweettrex", address: "sweettrex@sweettrex.com"),
-                  to: notification.email,
+                  to: alert.email,
                   subject: "[\(market.name)] Price alert",
-            body: "\(market.description) crossing price \(notification.price)\n\nFrom \(lastPrice) to \(currentPrice)")
+            body: "\(market.description) crossing price \(alert.price)\n\nFrom \(lastPrice) to \(currentPrice)")
     }
 }

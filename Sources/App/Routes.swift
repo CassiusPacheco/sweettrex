@@ -21,16 +21,16 @@ extension Droplet {
             return try marketController.allMarkets(request)
         }
         
-        let notificationRequestController = NotificationRequestController()
+        let alertController = AlertController()
         
-        api.post("notificationRequest") { request in
+        api.post("alert") { request in
             
-            return try notificationRequestController.create(request)
+            return try alertController.create(request)
         }
         
-        api.get("notificationRequest") { request in
+        api.get("alert") { request in
             
-            return try notificationRequestController.list(request)
+            return try alertController.list(request)
         }
     }
 }

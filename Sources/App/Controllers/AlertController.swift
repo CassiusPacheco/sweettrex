@@ -1,5 +1,5 @@
 //
-//  NotificationRequestController.swift
+//  AlertController.swift
 //  sweettrex
 //
 //  Created by Cassius Pacheco on 23/9/17.
@@ -9,7 +9,7 @@
 import Vapor
 import HTTP
 
-final class NotificationRequestController {
+final class AlertController {
     
     func create(_ request: Request) throws -> ResponseRepresentable {
         
@@ -17,9 +17,9 @@ final class NotificationRequestController {
         
         guard let json = request.json else { throw Abort.badRequest }
         
-        let notificationRequest = try NotificationRequest(json: json)
+        let alert = try Alert(json: json)
         
-        try notificationRequest.save()
+        try alert.save()
         
         return Response(status: .created)
     }
@@ -28,10 +28,10 @@ final class NotificationRequestController {
         
         guard let email = request.query?["email"]?.string else { throw Abort.badRequest }
         
-        let notificationRequests = try NotificationRequest.findAll(byEmail: email)
+        let alert = try Alert.findAll(byEmail: email)
         
-        return try notificationRequests.makeJSON()
+        return try alert.makeJSON()
     }
 }
 
-extension NotificationRequestController: EmptyInitializable { }
+extension AlertController: EmptyInitializable { }

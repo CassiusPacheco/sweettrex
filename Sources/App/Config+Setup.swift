@@ -25,6 +25,6 @@ extension Config {
     private func setupPreparations() throws {
         
         preparations.append(Market.self)
-        preparations.append(NotificationRequest.self)
+        preparations.append(Alert.self)
     }
 }
